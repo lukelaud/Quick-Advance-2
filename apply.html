@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Quick Advance — Admin Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0B1F3A;
+  --navy-mid: #132d52;
+  --blue: #1A56DB;
+  --blue-light: #3B82F6;
+  --blue-pale: #EFF6FF;
+  --green: #10B981;
+  --green-pale: #ECFDF5;
+  --gold: #F59E0B;
+  --gold-pale: #FFFBEB;
+  --red: #EF4444;
+  --red-pale: #FEF2F2;
+  --purple: #8B5CF6;
+  --purple-pale: #F5F3FF;
+  --white: #FFFFFF;
+  --bg: #F7F9FC;
+  --slate: #64748B;
+  --slate-light: #94A3B8;
+  --border: #E2E8F0;
+  --text: #0F172A;
+  --sidebar-w: 240px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);min-height:100vh;}
+
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.sidebar-logo{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid rgba(255,255,255,0.07);}
+.sidebar-logo a{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:white;text-decoration:none;letter-spacing:-0.02em;}
+.sidebar-logo a span{color:#60A5FA;}
+.sidebar-logo p{font-size:0.72rem;color:rgba(255,255,255,0.35);margin-top:0.15rem;}
+.admin-badge{display:inline-flex;align-items:center;gap:0.35rem;background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.3);border-radius:4px;padding:0.2rem 0.55rem;font-size:0.65rem;font-weight:700;color:#FCD34D;text-transform:uppercase;letter-spacing:0.08em;margin-top:0.5rem;}
+.admin-badge svg{width:10px;height:10px;}
+.sidebar-user{padding:1rem 1.25rem;display:flex;align-items:center;gap:0.75rem;border-bottom:1px solid rgba(255,255,255,0.07);}
+.user-avatar{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--gold) 0%,#F97316 100%);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:white;flex-shrink:0;}
+.user-info p{font-size:0.84rem;font-weight:600;color:white;}
+.user-info span{font-size:0.72rem;color:rgba(255,255,255,0.35);}
+.sidebar-nav{padding:1rem 0.75rem;flex:1;}
+.nav-section-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.3);padding:0.5rem 0.5rem 0.4rem;margin-top:0.5rem;}
+.nav-item{display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;border-radius:8px;color:rgba(255,255,255,0.55);font-size:0.87rem;font-weight:500;cursor:pointer;transition:all 0.15s;margin-bottom:0.15rem;text-decoration:none;}
+.nav-item svg{width:17px;height:17px;flex-shrink:0;}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85);}
+.nav-item.active{background:rgba(26,86,219,0.3);color:white;}
+.nav-item .badge{margin-left:auto;background:var(--red);font-size:0.65rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:100px;color:white;}
+.nav-item .badge.gold{background:var(--gold);}
+.sidebar-bottom{padding:1rem 0.75rem;border-top:1px solid rgba(255,255,255,0.07);}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:white;border-bottom:1px solid var(--border);padding:0 1.75rem;height:60px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.topbar-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--navy);}
+.topbar-right{display:flex;align-items:center;gap:0.75rem;}
+.topbar-date{font-size:0.82rem;color:var(--slate);}
+.topbar-search{display:flex;align-items:center;gap:0.5rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:0.45rem 0.85rem;font-size:0.83rem;color:var(--slate);}
+.topbar-search input{background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:0.83rem;color:var(--text);width:180px;}
+.topbar-search input::placeholder{color:var(--slate-light);}
+.topbar-search svg{width:15px;height:15px;color:var(--slate-light);flex-shrink:0;}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:1.75rem;display:flex;flex-direction:column;gap:1.5rem;}
+.content.hidden{display:none;}
+
+/* ── KPI ROW ── */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+.kpi-card{background:white;border-radius:14px;padding:1.25rem 1.5rem;border:1px solid var(--border);box-shadow:0 1px 4px rgba(11,31,58,0.05);}
+.kpi-label{font-size:0.73rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--slate-light);margin-bottom:0.4rem;}
+.kpi-value{font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:var(--navy);line-height:1;}
+.kpi-sub{font-size:0.78rem;color:var(--slate-light);margin-top:0.35rem;display:flex;align-items:center;gap:0.3rem;}
+.kpi-sub .up{color:var(--green);}
+.kpi-sub .down{color:var(--red);}
+
+/* ── QUEUE SECTION ── */
+.queue-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.queue-header-left h2{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--navy);}
+.queue-header-left p{font-size:0.8rem;color:var(--slate);margin-top:0.2rem;}
+.queue-header-right{display:flex;align-items:center;gap:0.75rem;}
+
+.filter-tabs{display:flex;background:white;border:1px solid var(--border);border-radius:9px;padding:0.25rem;gap:0.2rem;}
+.filter-tab{padding:0.35rem 0.9rem;border-radius:6px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.15s;color:var(--slate);border:none;background:none;font-family:'DM Sans',sans-serif;}
+.filter-tab.active{background:var(--navy);color:white;}
+.filter-tab:hover:not(.active){background:var(--bg);}
+
+.btn{display:inline-flex;align-items:center;gap:0.45rem;padding:0.5rem 1rem;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;text-decoration:none;border:none;font-family:'DM Sans',sans-serif;}
+.btn-primary{background:var(--blue);color:white;box-shadow:0 2px 8px rgba(26,86,219,0.25);}
+.btn-primary:hover{background:var(--navy);}
+.btn-secondary{background:white;color:var(--navy);border:1px solid var(--border);}
+.btn-secondary:hover{background:var(--bg);}
+.btn svg{width:15px;height:15px;}
+
+/* ── TABLE ── */
+.table-wrap{background:white;border-radius:14px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(11,31,58,0.05);overflow:hidden;}
+.table-inner{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead tr{border-bottom:1px solid var(--border);background:var(--bg);}
+th{text-align:left;padding:0.75rem 1.25rem;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--slate-light);white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;cursor:pointer;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--blue-pale);}
+td{padding:1rem 1.25rem;font-size:0.85rem;vertical-align:middle;}
+
+.td-business strong{display:block;font-weight:700;color:var(--navy);font-size:0.88rem;}
+.td-business span{font-size:0.77rem;color:var(--slate-light);}
+
+.td-amount{font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;color:var(--navy);}
+.td-amount small{font-family:'DM Sans',sans-serif;font-size:0.73rem;font-weight:500;color:var(--slate-light);display:block;}
+
+.status-pill{display:inline-flex;align-items:center;gap:0.35rem;font-size:0.73rem;font-weight:700;padding:0.3rem 0.7rem;border-radius:100px;white-space:nowrap;}
+.status-pill::before{content:'';width:5px;height:5px;border-radius:50%;}
+.status-new{background:#EFF6FF;color:#1D4ED8;}
+.status-new::before{background:#3B82F6;}
+.status-review{background:var(--gold-pale);color:#92400E;}
+.status-review::before{background:var(--gold);}
+.status-approved{background:var(--green-pale);color:#065F46;}
+.status-approved::before{background:var(--green);}
+.status-moreinfo{background:var(--purple-pale);color:#5B21B6;}
+.status-moreinfo::before{background:var(--purple);}
+.status-declined{background:var(--red-pale);color:#991B1B;}
+.status-declined::before{background:var(--red);}
+
+.td-date{font-size:0.8rem;color:var(--slate);}
+.td-score{display:inline-flex;align-items:center;gap:0.35rem;font-size:0.82rem;font-weight:600;}
+.score-good{color:#059669;}
+.score-mid{color:#D97706;}
+.score-low{color:var(--red);}
+
+.td-actions{display:flex;align-items:center;gap:0.5rem;}
+.icon-btn{width:32px;height:32px;border-radius:7px;border:1px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;color:var(--slate);}
+.icon-btn svg{width:14px;height:14px;}
+.icon-btn:hover{background:var(--bg);color:var(--navy);border-color:var(--navy);}
+.icon-btn.danger:hover{background:var(--red-pale);color:var(--red);border-color:var(--red);}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(11,31,58,0.45);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:18px;width:100%;max-width:760px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(11,31,58,0.2);}
+.modal-header{padding:1.5rem 1.75rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-shrink:0;}
+.modal-header-left h3{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--navy);}
+.modal-header-left p{font-size:0.8rem;color:var(--slate);margin-top:0.2rem;}
+.modal-close{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0;color:var(--slate);}
+.modal-close:hover{background:var(--bg);}
+.modal-close svg{width:16px;height:16px;}
+.modal-body{overflow-y:auto;padding:1.75rem;flex:1;display:flex;flex-direction:column;gap:1.5rem;scrollbar-width:thin;}
+
+/* detail sections */
+.detail-section h4{font-size:0.73rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--slate-light);margin-bottom:0.9rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);}
+.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;}
+.detail-grid.two-col{grid-template-columns:repeat(2,1fr);}
+.detail-item{background:var(--bg);border-radius:10px;padding:0.75rem 1rem;}
+.detail-item label{font-size:0.68rem;color:var(--slate-light);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;display:block;margin-bottom:0.25rem;}
+.detail-item span{font-size:0.9rem;font-weight:600;color:var(--navy);}
+.detail-item span.mono{font-family:monospace;font-size:0.85rem;}
+
+.flag-row{display:flex;gap:0.6rem;flex-wrap:wrap;}
+.flag-pill{display:inline-flex;align-items:center;gap:0.35rem;font-size:0.75rem;font-weight:600;padding:0.3rem 0.75rem;border-radius:100px;}
+.flag-warn{background:var(--gold-pale);color:#92400E;}
+.flag-ok{background:var(--green-pale);color:#065F46;}
+.flag-bad{background:var(--red-pale);color:#991B1B;}
+.flag-pill svg{width:12px;height:12px;}
+
+/* status controls */
+.status-controls{display:flex;flex-direction:column;gap:0.75rem;}
+.status-controls label{font-size:0.73rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--slate-light);}
+.status-btn-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0.5rem;}
+.status-btn{padding:0.5rem 0.4rem;border-radius:8px;border:1.5px solid var(--border);background:white;font-size:0.75rem;font-weight:600;cursor:pointer;transition:all 0.15s;text-align:center;font-family:'DM Sans',sans-serif;color:var(--slate);}
+.status-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale);}
+.status-btn.sel-new{background:#EFF6FF;border-color:#3B82F6;color:#1D4ED8;}
+.status-btn.sel-review{background:var(--gold-pale);border-color:var(--gold);color:#92400E;}
+.status-btn.sel-approved{background:var(--green-pale);border-color:var(--green);color:#065F46;}
+.status-btn.sel-moreinfo{background:var(--purple-pale);border-color:var(--purple);color:#5B21B6;}
+.status-btn.sel-declined{background:var(--red-pale);border-color:var(--red);color:#991B1B;}
+
+.notes-area{width:100%;border:1px solid var(--border);border-radius:10px;padding:0.85rem 1rem;font-family:'DM Sans',sans-serif;font-size:0.875rem;color:var(--text);resize:vertical;min-height:90px;outline:none;transition:border-color 0.2s;background:var(--bg);}
+.notes-area:focus{border-color:var(--blue);background:white;}
+.notes-area::placeholder{color:var(--slate-light);}
+
+.modal-footer{padding:1.25rem 1.75rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-shrink:0;background:var(--bg);}
+.modal-footer-left{font-size:0.78rem;color:var(--slate-light);}
+.modal-footer-right{display:flex;gap:0.75rem;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy);color:white;padding:0.85rem 1.25rem;border-radius:10px;font-size:0.85rem;font-weight:500;box-shadow:0 8px 30px rgba(11,31,58,0.25);z-index:300;display:flex;align-items:center;gap:0.6rem;transform:translateY(80px);opacity:0;transition:all 0.3s ease;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast svg{width:16px;height:16px;color:var(--green);}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* ── EMPTY STATE ── */
+.empty-queue{text-align:center;padding:4rem 2rem;}
+.eq-icon{width:60px;height:60px;border-radius:14px;background:var(--blue-pale);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;}
+.eq-icon svg{width:28px;height:28px;color:var(--blue);}
+.empty-queue h4{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:0.4rem;}
+.empty-queue p{font-size:0.83rem;color:var(--slate);}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html">Quick<span>Advance</span></a>
+      <p>Merchant Cash Advance</p>
+      <div class="admin-badge">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 100 4 2 2 0 000-4zM4.5 7A1.5 1.5 0 003 8.5V10h10V8.5A1.5 1.5 0 0011.5 7h-7zM3 11v.5A1.5 1.5 0 004.5 13h7a1.5 1.5 0 001.5-1.5V11H3z"/></svg>
+        Admin Panel
+      </div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar">A</div>
+      <div class="user-info">
+        <p>Admin User</p>
+        <span>Operations Team</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Applications</div>
+      <a class="nav-item active" onclick="setView('queue')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="14" height="12" rx="2"/><path d="M7 8h6M7 12h4"/></svg>
+        Application Queue
+        <span class="badge" id="nav-badge-new">0</span>
+      </a>
+      <a class="nav-item" onclick="setView('approved')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 10l4 4 6-6"/><circle cx="10" cy="10" r="8"/></svg>
+        Approved
+        <span class="badge gold" id="nav-badge-approved">0</span>
+      </a>
+      <div class="nav-section-label">Reports</div>
+      <a class="nav-item" href="#" onclick="showToast('Reports coming soon')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 17H5a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v5"/><polyline points="14,14 16,16 20,12"/></svg>
+        Analytics
+      </a>
+      <a class="nav-item" href="#" onclick="showToast('Funding tracker coming soon')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 3"/></svg>
+        Funding Pipeline
+      </a>
+      <div class="nav-section-label">Settings</div>
+      <a class="nav-item" href="index.html">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l7-7 7 7M5 8v8a1 1 0 001 1h3v-5h2v5h3a1 1 0 001-1V8"/></svg>
+        Back to Site
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a class="nav-item" href="#" onclick="adminSignOut(event)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 15H5a2 2 0 01-2-2V7a2 2 0 012-2h4M14 11l3-3-3-3M17 8H7"/></svg>
+        Sign Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Application Queue</div>
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M17 17l-4-4"/></svg>
+          <input type="text" id="search-input" placeholder="Search business, owner…" oninput="filterApps()"/>
+        </div>
+        <span class="topbar-date" id="topbar-date"></span>
+      </div>
+    </div>
+
+    <!-- QUEUE CONTENT -->
+    <div class="content" id="view-queue">
+
+      <!-- KPI Row -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-label">New Applications</div>
+          <div class="kpi-value" id="stat-new">—</div>
+          <div class="kpi-sub">Awaiting review</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Under Review</div>
+          <div class="kpi-value" id="stat-review">—</div>
+          <div class="kpi-sub">In progress</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Approved This Week</div>
+          <div class="kpi-value" id="stat-approved">—</div>
+          <div class="kpi-sub" id="stat-approved-vol">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Avg. Requested</div>
+          <div class="kpi-value" id="stat-avg">—</div>
+          <div class="kpi-sub">Per application</div>
+        </div>
+      </div>
+
+      <!-- Queue Table -->
+      <div>
+        <div class="queue-header">
+          <div class="queue-header-left">
+            <h2>Applications</h2>
+            <p id="queue-subtitle">Showing all applications</p>
+          </div>
+          <div class="queue-header-right">
+            <div class="filter-tabs">
+              <button class="filter-tab active" onclick="setFilter('all', this)">All</button>
+              <button class="filter-tab" onclick="setFilter('new', this)">New</button>
+              <button class="filter-tab" onclick="setFilter('review', this)">Under Review</button>
+              <button class="filter-tab" onclick="setFilter('approved', this)">Approved</button>
+              <button class="filter-tab" onclick="setFilter('moreinfo', this)">Needs Info</button>
+              <button class="filter-tab" onclick="setFilter('declined', this)">Declined</button>
+            </div>
+            <button class="btn btn-secondary" onclick="exportCSV()">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 16l4-4 4 4M12 12l4-4-4-4M8 12V4"/></svg>
+              Export
+            </button>
+          </div>
+        </div>
+
+        <div class="table-wrap" style="margin-top:1rem;">
+          <div class="table-inner">
+            <table>
+              <thead>
+                <tr>
+                  <th>Business</th>
+                  <th>Requested</th>
+                  <th>Industry</th>
+                  <th>Monthly Revenue</th>
+                  <th>Credit</th>
+                  <th>Status</th>
+                  <th>Submitted</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="app-table-body">
+              </tbody>
+            </table>
+            <div id="empty-state" class="empty-queue" style="display:none;">
+              <div class="eq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div>
+              <h4>No applications found</h4>
+              <p>Try adjusting your filters or search query.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPROVED VIEW -->
+    <div class="content hidden" id="view-approved">
+      <div style="background:white;border-radius:14px;border:1px solid var(--border);padding:2rem;text-align:center;margin-top:2rem;">
+        <div class="eq-icon" style="margin:0 auto 1rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+        <h4 style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:0.5rem;">Approved Applications</h4>
+        <p style="font-size:0.85rem;color:var(--slate);max-width:340px;margin:0 auto 1.5rem;">Approved deals will appear here. Connect your backend to sync funding status.</p>
+        <button class="btn btn-primary" onclick="setFilter('approved', null); setView('queue')">View Approved in Queue</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- APPLICATION DETAIL MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOnBg(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <h3 id="modal-biz-name">Business Name</h3>
+        <p id="modal-ref">Ref: QA-000000 · Submitted Jan 1</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l8 8M14 6l-8 8"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Business Info -->
+      <div>
+        <div class="detail-section"><h4>Business Information</h4></div>
+        <div class="detail-grid" id="modal-biz-grid"></div>
+      </div>
+
+      <!-- Financial Info -->
+      <div>
+        <div class="detail-section"><h4>Financial Profile</h4></div>
+        <div class="detail-grid" id="modal-fin-grid"></div>
+      </div>
+
+      <!-- Funding Request -->
+      <div>
+        <div class="detail-section"><h4>Funding Request</h4></div>
+        <div class="detail-grid two-col" id="modal-fund-grid"></div>
+      </div>
+
+      <!-- Flags -->
+      <div>
+        <div class="detail-section"><h4>Risk Flags</h4></div>
+        <div class="flag-row" id="modal-flags"></div>
+      </div>
+
+      <!-- Status Control -->
+      <div>
+        <div class="detail-section"><h4>Update Status</h4></div>
+        <div class="status-controls">
+          <div class="status-btn-grid">
+            <button class="status-btn" onclick="selectStatus('new')" id="sbtn-new">🆕 New</button>
+            <button class="status-btn" onclick="selectStatus('review')" id="sbtn-review">🔍 Under Review</button>
+            <button class="status-btn" onclick="selectStatus('approved')" id="sbtn-approved">✅ Approved</button>
+            <button class="status-btn" onclick="selectStatus('moreinfo')" id="sbtn-moreinfo">📋 Needs Info</button>
+            <button class="status-btn" onclick="selectStatus('declined')" id="sbtn-declined">❌ Declined</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div>
+        <div class="detail-section"><h4>Internal Notes</h4></div>
+        <textarea class="notes-area" id="modal-notes" placeholder="Add internal notes about this application — decision rationale, documents requested, follow-up needed…"></textarea>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <div class="modal-footer-left" id="modal-last-updated">No changes saved</div>
+      <div class="modal-footer-right">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveApplication()">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 13l4 4L19 7"/></svg>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 10l4 4L15 7"/></svg>
+  <span id="toast-msg">Saved successfully</span>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const db = window.supabase.createClient(
+  'https://pkwgdojmilnxsbfkabwt.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrd2dkb2ptaWxueHNiZmthYnd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NTQ1MjAsImV4cCI6MjA4ODQzMDUyMH0.ETByVV9cFSD_UPFB9mXPZeMOiBll4fJn8MGuvQ9lYRw'
+);
+</script>
+<script>
+
+let currentFilter = 'all';
+let currentSearch = '';
+let activeAppId = null;
+let selectedStatus = null;
+let apps = [];
+
+// Map Supabase snake_case rows → our camelCase display format
+function mapRow(r) {
+  return {
+    id: r.ref_num,
+    biz: r.biz_name,
+    dba: r.dba || '',
+    entity: r.entity_type,
+    industry: r.industry,
+    years: r.years_in_biz,
+    employees: r.employees,
+    address: r.address,
+    owner: r.owner_name,
+    email: r.email,
+    phone: r.phone,
+    credit: r.credit_score,
+    bankruptcy: r.bankruptcy,
+    existingMCA: r.existing_mca,
+    monthlyRevenue: r.monthly_revenue,
+    deposits: r.monthly_deposits,
+    ccSales: r.cc_sales,
+    outstandingDebt: r.outstanding_debt,
+    requestedAmount: r.requested_amount,
+    useOfFunds: r.use_of_funds,
+    timeline: r.timeline,
+    status: r.status || 'new',
+    notes: r.notes || '',
+    submitted: r.submitted_date || r.created_at?.slice(0,10) || '',
+    lastSaved: r.updated_at ? new Date(r.updated_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : null,
+    _supabaseId: r.id,  // internal numeric PK for updates
+  };
+}
+
+async function loadApps() {
+  showLoading(true);
+  const { data, error } = await db
+    .from('applications')
+    .select('*')
+    .order('created_at', { ascending: false });
+  showLoading(false);
+  if (error) { showToast('Error loading applications: ' + error.message); return; }
+  apps = (data || []).map(mapRow);
+  renderTable();
+}
+
+function showLoading(on) {
+  const tbody = document.getElementById('app-table-body');
+  if (on) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:3rem;color:var(--slate-light);font-size:0.85rem;">
+      <svg style="width:20px;height:20px;animation:spin 1s linear infinite;display:inline-block;margin-right:0.5rem;vertical-align:middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+      Loading applications…</td></tr>`;
+  }
+}
+
+// Subscribe to realtime inserts
+function subscribeRealtime() {
+  db
+    .channel('applications-changes')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'applications' }, payload => {
+      const newApp = mapRow(payload.new);
+      apps.unshift(newApp);
+      renderTable();
+      showToast('🔔 New application from ' + newApp.biz);
+    })
+    .subscribe();
+}
+
+
+// ── STATUS HELPERS ────────────────────────────────────────────────────────
+const STATUS_LABELS = {
+  new: 'New', review: 'Under Review', approved: 'Approved',
+  moreinfo: 'Needs Info', declined: 'Declined'
+};
+const STATUS_CSS = {
+  new: 'status-new', review: 'status-review', approved: 'status-approved',
+  moreinfo: 'status-moreinfo', declined: 'status-declined'
+};
+
+function statusPill(status) {
+  return `<span class="status-pill ${STATUS_CSS[status]}">${STATUS_LABELS[status]}</span>`;
+}
+
+function creditColor(score) {
+  if (score.includes('760') || score.includes('720')) return 'score-good';
+  if (score.includes('680') || score.includes('640')) return 'score-mid';
+  return 'score-low';
+}
+
+function fmt(n) { return '$' + n.toLocaleString(); }
+
+function fmtDate(d) {
+  const [y, m, day] = d.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[+m-1]} ${+day}`;
+}
+
+// ── RENDER TABLE ─────────────────────────────────────────────────────────
+function renderTable() {
+  const filtered = apps.filter(a => {
+    const matchFilter = currentFilter === 'all' || a.status === currentFilter;
+    const q = currentSearch.toLowerCase();
+    const matchSearch = !q || a.biz.toLowerCase().includes(q) || a.owner.toLowerCase().includes(q) || a.id.toLowerCase().includes(q) || a.industry.toLowerCase().includes(q);
+    return matchFilter && matchSearch;
+  });
+
+  const tbody = document.getElementById('app-table-body');
+  const empty = document.getElementById('empty-state');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    tbody.innerHTML = filtered.map(a => `
+      <tr onclick="openModal('${a.id}')">
+        <td><div class="td-business"><strong>${a.biz}</strong><span>${a.owner} · ${a.industry}</span></div></td>
+        <td><div class="td-amount">${fmt(a.requestedAmount)}<small>${a.useOfFunds}</small></div></td>
+        <td>${a.industry}</td>
+        <td>${fmt(a.monthlyRevenue)}<br><small style="color:var(--slate-light);font-size:0.72rem;">/mo avg</small></td>
+        <td><span class="td-score ${creditColor(a.credit)}">${a.credit}</span></td>
+        <td>${statusPill(a.status)}</td>
+        <td class="td-date">${fmtDate(a.submitted)}</td>
+        <td onclick="event.stopPropagation()">
+          <div class="td-actions">
+            <button class="icon-btn" title="View details" onclick="openModal('${a.id}')">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 10s3-7 9-7 9 7 9 7-3 7-9 7-9-7-9-7z"/><circle cx="10" cy="10" r="2.5"/></svg>
+            </button>
+            <button class="icon-btn danger" title="Decline" onclick="quickDecline('${a.id}')">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l8 8M14 6l-8 8"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  const label = currentFilter === 'all' ? 'all applications' : STATUS_LABELS[currentFilter].toLowerCase() + ' applications';
+  document.getElementById('queue-subtitle').textContent = `Showing ${filtered.length} ${label}`;
+  updateStats();
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────
+function updateStats() {
+  const newCount = apps.filter(a => a.status === 'new').length;
+  const reviewCount = apps.filter(a => a.status === 'review').length;
+  const approvedApps = apps.filter(a => a.status === 'approved');
+  const avgReq = apps.length ? Math.round(apps.reduce((s,a)=>s+a.requestedAmount,0)/apps.length) : 0;
+
+  document.getElementById('stat-new').textContent = newCount;
+  document.getElementById('stat-review').textContent = reviewCount;
+  document.getElementById('stat-approved').textContent = approvedApps.length;
+  document.getElementById('stat-approved-vol').innerHTML = approvedApps.length
+    ? `${fmt(approvedApps.reduce((s,a)=>s+a.requestedAmount,0))} total approved`
+    : 'None yet';
+  document.getElementById('stat-avg').textContent = apps.length ? fmt(avgReq) : '—';
+  document.getElementById('nav-badge-new').textContent = newCount;
+  document.getElementById('nav-badge-approved').textContent = approvedApps.length;
+}
+
+// ── FILTERS ───────────────────────────────────────────────────────────────
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderTable();
+}
+
+function filterApps() {
+  currentSearch = document.getElementById('search-input').value;
+  renderTable();
+}
+
+// ── VIEWS ─────────────────────────────────────────────────────────────────
+function setView(v) {
+  document.querySelectorAll('.content').forEach(c => c.classList.add('hidden'));
+  document.getElementById('view-' + v).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('topbar-title').textContent = v === 'queue' ? 'Application Queue' : 'Approved Applications';
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────
+function openModal(id) {
+  const a = apps.find(x => x.id === id);
+  if (!a) return;
+  activeAppId = id;
+  selectedStatus = a.status;
+
+  document.getElementById('modal-biz-name').textContent = a.biz + (a.dba ? ` (${a.dba})` : '');
+  document.getElementById('modal-ref').textContent = `Ref: ${a.id} · Submitted ${fmtDate(a.submitted)}`;
+
+  document.getElementById('modal-biz-grid').innerHTML = [
+    ['Entity Type', a.entity], ['Industry', a.industry],
+    ['Years in Business', a.years + ' yrs'], ['Employees', a.employees],
+    ['Owner', a.owner], ['Address', a.address],
+    ['Email', a.email], ['Phone', a.phone], ['Timeline', a.timeline]
+  ].map(([l,v]) => `<div class="detail-item"><label>${l}</label><span>${v}</span></div>`).join('');
+
+  document.getElementById('modal-fin-grid').innerHTML = [
+    ['Monthly Revenue', fmt(a.monthlyRevenue)], ['Avg. Monthly Deposits', fmt(a.deposits)],
+    ['Monthly CC Sales', fmt(a.ccSales)], ['Outstanding Debt', fmt(a.outstandingDebt)],
+    ['Credit Score Est.', a.credit], ['Time in Business', a.years + ' years']
+  ].map(([l,v]) => `<div class="detail-item"><label>${l}</label><span>${v}</span></div>`).join('');
+
+  document.getElementById('modal-fund-grid').innerHTML = [
+    ['Requested Amount', fmt(a.requestedAmount)], ['Use of Funds', a.useOfFunds]
+  ].map(([l,v]) => `<div class="detail-item"><label>${l}</label><span>${v}</span></div>`).join('');
+
+  // Flags
+  const flags = [];
+  if (a.bankruptcy) flags.push(['⚠️ Prior Bankruptcy', 'flag-bad']);
+  else flags.push(['✓ No Bankruptcy', 'flag-ok']);
+  if (a.existingMCA) flags.push(['⚠️ Existing MCA', 'flag-warn']);
+  else flags.push(['✓ No Existing MCA', 'flag-ok']);
+  if (a.outstandingDebt > a.monthlyRevenue) flags.push(['⚠️ High Debt-to-Revenue', 'flag-bad']);
+  else flags.push(['✓ Debt-to-Revenue OK', 'flag-ok']);
+  if (a.years < 2) flags.push(['⚠️ < 2 Years in Business', 'flag-warn']);
+  else flags.push(['✓ Established Business', 'flag-ok']);
+
+  document.getElementById('modal-flags').innerHTML = flags.map(([t,c]) =>
+    `<span class="flag-pill ${c}">${t}</span>`).join('');
+
+  // Status buttons
+  refreshStatusBtns();
+
+  document.getElementById('modal-notes').value = a.notes || '';
+  document.getElementById('modal-last-updated').textContent = a.lastSaved ? `Last saved ${a.lastSaved}` : 'No changes saved';
+
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  activeAppId = null;
+  selectedStatus = null;
+}
+
+function closeModalOnBg(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function selectStatus(s) {
+  selectedStatus = s;
+  refreshStatusBtns();
+}
+
+function refreshStatusBtns() {
+  ['new','review','approved','moreinfo','declined'].forEach(s => {
+    const btn = document.getElementById('sbtn-' + s);
+    btn.className = 'status-btn' + (s === selectedStatus ? ' sel-' + s : '');
+  });
+}
+
+async function saveApplication() {
+  if (!activeAppId) return;
+  const app = apps.find(a => a.id === activeAppId);
+  if (!app) return;
+
+  const btn = document.querySelector('.modal-footer-right .btn-primary');
+  btn.disabled = true;
+  btn.innerHTML = '<svg style="width:15px;height:15px;animation:spin 1s linear infinite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4"/></svg> Saving…';
+
+  const newStatus = selectedStatus;
+  const newNotes = document.getElementById('modal-notes').value;
+
+  const { error } = await db
+    .from('applications')
+    .update({ status: newStatus, notes: newNotes })
+    .eq('ref_num', activeAppId);
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px"><path d="M5 10l4 4L15 7"/></svg> Save Changes';
+
+  if (error) { showToast('Save failed: ' + error.message); return; }
+
+  app.status = newStatus;
+  app.notes = newNotes;
+  app.lastSaved = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  renderTable();
+  document.getElementById('modal-last-updated').textContent = `Last saved ${app.lastSaved}`;
+  showToast('Application updated successfully');
+  setTimeout(closeModal, 600);
+}
+
+async function quickDecline(id) {
+  const app = apps.find(a => a.id === id);
+  if (!app) return;
+  if (app.status === 'declined') { showToast('Already declined'); return; }
+
+  const { error } = await db
+    .from('applications')
+    .update({ status: 'declined' })
+    .eq('ref_num', id);
+
+  if (error) { showToast('Error: ' + error.message); return; }
+  app.status = 'declined';
+  renderTable();
+  showToast('Application declined');
+}
+
+// ── EXPORT ────────────────────────────────────────────────────────────────
+function exportCSV() {
+  const rows = [['ID','Business','Owner','Industry','Requested','Monthly Revenue','Credit Score','Status','Submitted']];
+  apps.forEach(a => rows.push([a.id, a.biz, a.owner, a.industry, a.requestedAmount, a.monthlyRevenue, a.credit, STATUS_LABELS[a.status], a.submitted]));
+  const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'quickadvance-applications.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('Exported applications.csv');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+async function adminSignOut(e) {
+  if (e) e.preventDefault();
+  await db.auth.signOut();
+  window.location.href = 'login.html?tab=admin';
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  const now = new Date();
+  document.getElementById('topbar-date').textContent = now.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+
+  // Auth guard — require admin session
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) {
+    window.location.href = 'login.html?tab=admin';
+    return;
+  }
+  const role = session.user?.user_metadata?.role;
+  if (role !== 'admin') {
+    await db.auth.signOut();
+    window.location.href = 'login.html?tab=admin';
+    return;
+  }
+
+  loadApps();
+  subscribeRealtime();
+});
+</script>
+</body>
+</html>
