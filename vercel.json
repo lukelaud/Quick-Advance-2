@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Sign In — Quick Advance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0B1F3A;
+  --navy-mid: #132d52;
+  --blue: #1A56DB;
+  --blue-light: #3B82F6;
+  --blue-pale: #EFF6FF;
+  --green: #10B981;
+  --green-pale: #ECFDF5;
+  --red: #EF4444;
+  --white: #FFFFFF;
+  --bg: #F7F9FC;
+  --slate: #64748B;
+  --slate-light: #94A3B8;
+  --border: #E2E8F0;
+  --text: #0F172A;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);min-height:100vh;display:flex;flex-direction:column;}
+
+.page{display:flex;min-height:100vh;}
+
+/* Left panel */
+.left-panel{width:420px;flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;padding:3rem;position:relative;overflow:hidden;}
+.left-panel::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(26,86,219,0.25) 0%,transparent 70%);top:-150px;right:-200px;pointer-events:none;}
+.left-panel::after{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(96,165,250,0.12) 0%,transparent 70%);bottom:-80px;left:-80px;pointer-events:none;}
+.lp-logo{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:white;text-decoration:none;letter-spacing:-0.02em;margin-bottom:auto;}
+.lp-logo span{color:#60A5FA;}
+.lp-content{position:relative;z-index:1;}
+.lp-tagline{font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:white;line-height:1.3;margin-bottom:1.25rem;}
+.lp-tagline span{color:#60A5FA;}
+.lp-desc{font-size:0.9rem;color:rgba(255,255,255,0.55);line-height:1.7;margin-bottom:2rem;}
+.lp-trust{display:flex;flex-direction:column;gap:0.75rem;}
+.lp-trust-item{display:flex;align-items:center;gap:0.75rem;font-size:0.85rem;color:rgba(255,255,255,0.7);}
+.lp-trust-icon{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.lp-trust-icon svg{width:16px;height:16px;color:#60A5FA;}
+.lp-copy{font-size:0.73rem;color:rgba(255,255,255,0.25);margin-top:3rem;}
+
+/* Right panel */
+.right-panel{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem 2rem;background:var(--bg);}
+.login-card{width:100%;max-width:440px;}
+.login-card-header{margin-bottom:2.5rem;}
+
+/* Tabs */
+.tab-switcher{display:flex;background:white;border:1px solid var(--border);border-radius:12px;padding:0.3rem;margin-bottom:2rem;box-shadow:0 1px 4px rgba(11,31,58,0.05);}
+.tab-btn{flex:1;padding:0.6rem 1rem;border:none;background:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.87rem;font-weight:600;color:var(--slate);cursor:pointer;transition:all 0.2s;}
+.tab-btn.active{background:var(--navy);color:white;box-shadow:0 2px 8px rgba(11,31,58,0.2);}
+
+/* Form */
+.form-title{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--navy);margin-bottom:0.4rem;}
+.form-sub{font-size:0.875rem;color:var(--slate);line-height:1.6;}
+.form-sub a{color:var(--blue);text-decoration:none;font-weight:600;}
+.form-sub a:hover{text-decoration:underline;}
+
+.field{margin-bottom:1.25rem;}
+.field label{display:block;font-size:0.8rem;font-weight:700;color:var(--navy);margin-bottom:0.45rem;letter-spacing:0.01em;}
+.field input{width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--text);background:white;outline:none;transition:all 0.2s;}
+.field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,0.1);}
+.field input::placeholder{color:var(--slate-light);}
+.field input.error{border-color:var(--red);}
+
+.field-hint{font-size:0.76rem;color:var(--slate-light);margin-top:0.35rem;}
+.field-error{font-size:0.76rem;color:var(--red);margin-top:0.35rem;display:none;}
+.field-error.visible{display:block;}
+
+.btn-primary{width:100%;padding:0.85rem 1.5rem;background:var(--blue);color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:0.5rem;box-shadow:0 4px 14px rgba(26,86,219,0.3);}
+.btn-primary:hover{background:#1547bf;transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,86,219,0.35);}
+.btn-primary:disabled{background:var(--slate-light);box-shadow:none;transform:none;cursor:not-allowed;}
+.btn-primary svg{width:17px;height:17px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spin{animation:spin 1s linear infinite;}
+
+/* Success state */
+.success-box{background:var(--green-pale);border:1px solid rgba(16,185,129,0.25);border-radius:12px;padding:1.5rem;text-align:center;display:none;}
+.success-box.visible{display:block;}
+.success-icon{width:48px;height:48px;border-radius:12px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;}
+.success-icon svg{width:24px;height:24px;color:var(--green);}
+.success-title{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:0.4rem;}
+.success-sub{font-size:0.85rem;color:var(--slate);line-height:1.6;}
+.success-sub strong{color:var(--navy);}
+
+/* Alert */
+.alert{padding:0.75rem 1rem;border-radius:8px;font-size:0.83rem;margin-bottom:1rem;display:none;}
+.alert.visible{display:block;}
+.alert.error{background:#FEF2F2;border:1px solid rgba(239,68,68,0.2);color:#B91C1C;}
+.alert.info{background:var(--blue-pale);border:1px solid rgba(26,86,219,0.2);color:#1E40AF;}
+
+/* Admin badge */
+.admin-label{display:inline-flex;align-items:center;gap:0.35rem;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:6px;padding:0.25rem 0.65rem;font-size:0.72rem;font-weight:700;color:#D97706;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:1.25rem;}
+.admin-label svg{width:12px;height:12px;}
+
+.divider{display:flex;align-items:center;gap:0.75rem;margin:1.5rem 0;font-size:0.78rem;color:var(--slate-light);}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.back-link{display:flex;align-items:center;gap:0.4rem;font-size:0.83rem;color:var(--slate);text-decoration:none;transition:color 0.15s;margin-top:1.75rem;justify-content:center;}
+.back-link:hover{color:var(--navy);}
+.back-link svg{width:15px;height:15px;}
+
+@media(max-width:768px){
+  .left-panel{display:none;}
+  .right-panel{padding:2rem 1.5rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <!-- Left branding panel -->
+  <div class="left-panel">
+    <a class="lp-logo" href="index.html">Quick<span>Advance</span></a>
+    <div class="lp-content">
+      <div class="lp-tagline">Your capital.<br/><span>Your dashboard.</span><br/>Your advisor.</div>
+      <p class="lp-desc">Track your advance, manage cash flow, and get personalized financial advice from your AI advisor — all in one place.</p>
+      <div class="lp-trust">
+        <div class="lp-trust-item">
+          <div class="lp-trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+          Funding decisions in as little as 2 hours
+        </div>
+        <div class="lp-trust-item">
+          <div class="lp-trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg></div>
+          Live AI advisor personalized to your loan
+        </div>
+        <div class="lp-trust-item">
+          <div class="lp-trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          Bank-level encryption on all data
+        </div>
+      </div>
+    </div>
+    <p class="lp-copy">© 2026 Quick Advance LLC. All rights reserved.</p>
+  </div>
+
+  <!-- Right login panel -->
+  <div class="right-panel">
+    <div class="login-card">
+      <div class="tab-switcher">
+        <button class="tab-btn active" onclick="switchTab('borrower')" id="tab-borrower-btn">Borrower Sign In</button>
+        <button class="tab-btn" onclick="switchTab('admin')" id="tab-admin-btn">Admin Access</button>
+      </div>
+
+      <!-- ── BORROWER TAB ── -->
+      <div id="borrower-panel">
+        <div class="login-card-header">
+          <div class="form-title">Welcome back</div>
+          <p class="form-sub">Enter your email and we'll send you a secure sign-in link. No password needed. <a href="apply.html">Apply for funding →</a></p>
+        </div>
+
+        <div class="alert error" id="borrower-alert"></div>
+
+        <div id="borrower-form">
+          <div class="field">
+            <label for="borrower-email">Email address</label>
+            <input type="email" id="borrower-email" placeholder="you@yourbusiness.com" autocomplete="email"/>
+            <div class="field-error" id="borrower-email-err">Please enter a valid email address.</div>
+          </div>
+          <button class="btn-primary" id="borrower-submit-btn" onclick="sendMagicLink()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Send Magic Link
+          </button>
+        </div>
+
+        <div class="success-box" id="borrower-success">
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8"/><path d="M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </div>
+          <div class="success-title">Check your email</div>
+          <p class="success-sub">We've sent a secure sign-in link to <strong id="sent-email-display"></strong>. Click the link in that email to access your dashboard.<br/><br/>The link expires in 1 hour.</p>
+        </div>
+      </div>
+
+      <!-- ── ADMIN TAB ── -->
+      <div id="admin-panel" style="display:none;">
+        <div class="login-card-header">
+          <div class="admin-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/></svg>
+            Staff Access Only
+          </div>
+          <div class="form-title">Admin Sign In</div>
+          <p class="form-sub">This area is restricted to Quick Advance staff.</p>
+        </div>
+
+        <div class="alert error" id="admin-alert"></div>
+
+        <div id="admin-form">
+          <div class="field">
+            <label for="admin-email">Staff email</label>
+            <input type="email" id="admin-email" placeholder="staff@quickadvance.com" autocomplete="email"/>
+            <div class="field-error" id="admin-email-err">Please enter a valid email.</div>
+          </div>
+          <div class="field">
+            <label for="admin-password">Password</label>
+            <input type="password" id="admin-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')adminLogin()"/>
+            <div class="field-error" id="admin-pass-err">Password is required.</div>
+          </div>
+          <button class="btn-primary" id="admin-submit-btn" onclick="adminLogin()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+            Sign In to Admin
+          </button>
+        </div>
+      </div>
+
+      <a class="back-link" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        Back to homepage
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const db = window.supabase.createClient(
+  'https://pkwgdojmilnxsbfkabwt.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrd2dkb2ptaWxueHNiZmthYnd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NTQ1MjAsImV4cCI6MjA4ODQzMDUyMH0.ETByVV9cFSD_UPFB9mXPZeMOiBll4fJn8MGuvQ9lYRw'
+);
+</script>
+<script>
+
+// ── URL PARAM — open admin tab if ?tab=admin ──
+const params = new URLSearchParams(window.location.search);
+if (params.get('tab') === 'admin') switchTab('admin');
+
+// ── CHECK IF ALREADY AUTHENTICATED ──
+(async () => {
+  const { data: { session } } = await db.auth.getSession();
+  if (session) {
+    // Check if admin session
+    const isAdmin = session.user.user_metadata?.role === 'admin';
+    window.location.href = isAdmin ? 'admin.html' : 'dashboard.html';
+  }
+})();
+
+// ── HANDLE AUTH CALLBACK (magic link redirect) ──
+// Supabase handles token exchange automatically via onAuthStateChange
+db.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'SIGNED_IN' && session) {
+    const isAdmin = session.user.user_metadata?.role === 'admin';
+    window.location.href = isAdmin ? 'admin.html' : 'dashboard.html';
+  }
+});
+
+// ── TAB SWITCHER ──
+function switchTab(tab) {
+  const isBorrower = tab === 'borrower';
+  document.getElementById('tab-borrower-btn').classList.toggle('active', isBorrower);
+  document.getElementById('tab-admin-btn').classList.toggle('active', !isBorrower);
+  document.getElementById('borrower-panel').style.display = isBorrower ? '' : 'none';
+  document.getElementById('admin-panel').style.display = isBorrower ? 'none' : '';
+}
+
+// ── BORROWER: MAGIC LINK ──
+async function sendMagicLink() {
+  const emailInput = document.getElementById('borrower-email');
+  const email = emailInput.value.trim();
+  const emailErr = document.getElementById('borrower-email-err');
+  const alertEl = document.getElementById('borrower-alert');
+  const btn = document.getElementById('borrower-submit-btn');
+
+  // Reset
+  emailErr.classList.remove('visible');
+  emailInput.classList.remove('error');
+  alertEl.classList.remove('visible');
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    emailErr.classList.add('visible');
+    emailInput.classList.add('error');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = `<svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:17px;height:17px;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4"/></svg> Sending…`;
+
+  const { error } = await db.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: window.location.origin + '/dashboard.html'
+    }
+  });
+
+  if (error) {
+    btn.disabled = false;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px;height:17px;"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> Send Magic Link`;
+    alertEl.textContent = 'Error: ' + error.message;
+    alertEl.classList.add('visible');
+    return;
+  }
+
+  document.getElementById('sent-email-display').textContent = email;
+  document.getElementById('borrower-form').style.display = 'none';
+  document.getElementById('borrower-success').classList.add('visible');
+}
+
+// ── ADMIN: EMAIL + PASSWORD ──
+async function adminLogin() {
+  const email = document.getElementById('admin-email').value.trim();
+  const password = document.getElementById('admin-password').value;
+  const alertEl = document.getElementById('admin-alert');
+  const btn = document.getElementById('admin-submit-btn');
+  const emailErr = document.getElementById('admin-email-err');
+  const passErr = document.getElementById('admin-pass-err');
+
+  emailErr.classList.remove('visible');
+  passErr.classList.remove('visible');
+  document.getElementById('admin-email').classList.remove('error');
+  document.getElementById('admin-password').classList.remove('error');
+  alertEl.classList.remove('visible');
+
+  let valid = true;
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    emailErr.classList.add('visible');
+    document.getElementById('admin-email').classList.add('error');
+    valid = false;
+  }
+  if (!password) {
+    passErr.classList.add('visible');
+    document.getElementById('admin-password').classList.add('error');
+    valid = false;
+  }
+  if (!valid) return;
+
+  btn.disabled = true;
+  btn.innerHTML = `<svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:17px;height:17px;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4"/></svg> Signing in…`;
+
+  const { data, error } = await db.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    btn.disabled = false;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px;height:17px;"><path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg> Sign In to Admin`;
+    alertEl.textContent = 'Invalid credentials. Please check your email and password.';
+    alertEl.classList.add('visible');
+    return;
+  }
+
+  // Check admin role
+  const role = data.user?.user_metadata?.role;
+  if (role !== 'admin') {
+    await db.auth.signOut();
+    btn.disabled = false;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px;height:17px;"><path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg> Sign In to Admin`;
+    alertEl.textContent = 'Access denied. This account does not have admin privileges.';
+    alertEl.classList.add('visible');
+    return;
+  }
+
+  window.location.href = 'admin.html';
+}
+</script>
+</body>
+</html>
